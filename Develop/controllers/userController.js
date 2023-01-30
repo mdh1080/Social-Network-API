@@ -70,14 +70,14 @@ module.exports = {
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No such user exists' })
-          : Course.findOneAndUpdate(
+          : Thought.findOneAndUpdate(
               { users: req.params.userId },
               { $pull: { users: req.params.userId } },
               { new: true }
             )
       )
-      .then((course) =>
-        !course
+      .then((thought) =>
+        !thought
           ? res.status(404).json({
               message: 'User deleted, but no thoughts found',
             })
@@ -122,5 +122,37 @@ module.exports = {
           : res.json(user)
       )
       .catch((err) => res.status(500).json(err));
+  },
+
+createFriend(req, res) {
+  Friend.create(req.body)
+    .then((friend) => res.json(friend))
+    .catch((err) => res.status(500).json(err));
+},
+
+// Delete a friend and remove them from the
+deleteFriend(req, res) {
+  Friend.findOneAndRemove({ _id: req.params.friendId })
+    .then((friend) =>
+      !friend
+        ? res.status(404).json({ message: 'No such friend exists' })
+        : Thought.findOneAndUpdate(
+            { friends: req.params.friendId },
+            { $pull: { users: req.params.friendId } },
+            { new: true }
+          )
+    )
+    .then((thought) =>
+      !thought
+        ? res.status(404).json({
+            message: 'Friend deleted, but no thoughts found',
+          })
+        : res.json({ message: 'Friend successfully deleted' })
+    )
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+
   },
 };
