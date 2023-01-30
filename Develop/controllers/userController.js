@@ -3,37 +3,11 @@ const { ObjectId } = require('mongoose').Types;
 const { User, Thought } = require('../models');
 
 // TODO: Create an aggregate function to get the number of users overall
-const headCount = async () =>
-  User.aggregate()
-    // Your code here
-    .then((numberOfUsers) => numberOfUsers);
-
-// Execute the aggregate method on the User model and calculate the overall grade by using the $avg operator
-const grade = async (userId) =>
-  User.aggregate([
-    // TODO: Ensure we include only the user who can match the given ObjectId using the $match operator
-    {
-      // Your code here
-    },
-    {
-      $unwind: '$reactions',
-    },
-    // TODO: Group information for the user with the given ObjectId alongside an overall grade calculated using the $avg operator
-    {
-      // Your code here
-    },
-  ]);
-
-module.exports = {
-  // Get all users
+const userController = {
   getUsers(req, res) {
     User.find()
-      .then(async (users) => {
-        const userObj = {
-          users,
-          headCount: await headCount(),
-        };
-        return res.json(userObj);
+      .then((users) => {
+        return res.json(users);
       })
       .catch((err) => {
         console.log(err);
@@ -45,13 +19,10 @@ module.exports = {
     User.findOne({ _id: req.params.userId })
       .select('-__v')
       .lean()
-      .then(async (user) =>
+      .then((user) =>
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
-          : res.json({
-              user,
-              grade: await grade(req.params.userId),
-            })
+          : res.json(user)
       )
       .catch((err) => {
         console.log(err);
@@ -123,6 +94,21 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
+updateUser(req, res) {
+  User.findOneAndUpdate(
+    { _id: req.params.userId },
+    { $set: req.body},
+    { runValidators: true, new: true }
+  )
+    .then((user) =>
+      !user
+        ? res
+            .status(404) 
+            .json({ message: 'No user found with that ID :(' })
+        : res.json(user)
+    )
+    .catch((err) => res.status(500).json(err));
+},
 
 createFriend(req, res) {
   Friend.create(req.body)
@@ -156,3 +142,5 @@ deleteFriend(req, res) {
 
   },
 };
+
+module.exports = userController;
