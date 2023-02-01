@@ -30,7 +30,7 @@ const thoughtController = {
   },
   // Delete a thought
   deleteThought(req, res) {
-    Thought.findOneAndDelete({ _id: req.params.thoughtId })
+    Thought.findByIdAndDelete({ _id: req.params.thoughtId })
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: 'No thought with that ID' })
@@ -41,7 +41,7 @@ const thoughtController = {
   },
   // Update a thought
   updateThought(req, res) {
-    Thought.findOneAndUpdate(
+    Thought.findByIdAndUpdate(
       { _id: req.params._id },
       { $set: req.body },
       { runValidators: true, new: true }
@@ -55,7 +55,7 @@ const thoughtController = {
   },
 
   createReaction(req, res) {
-    Thought.findOneAndUpdate(
+    Thought.findByIdAndUpdate(
         { _id: req.params.thoughtId },
         { $addToSet: {reactions: req.body} },
         { runValidators: true, new: true }
@@ -69,7 +69,7 @@ const thoughtController = {
 },
 
 deleteReaction(req, res) {
-  Thought.findOneAndUpdate(
+  Thought.findByIdAndDelete(
       { _id: req.params.thoughtId },
       { $addToSet: {reactions: req.body} },
       { runValidators: true, new: true }

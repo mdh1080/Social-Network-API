@@ -4,17 +4,12 @@ const reactionSchema = require('./Reaction');
 
 const thoughtSchema = new Schema(
   {
-    thoughtId: {
-      type: Schema.Types.ObjectId,
-      default: () => new Types.ObjectId(),
-    },
     thoughtText: {
       type: String,
       required: true,
       minlength: 1,
       maxlength: 280,
     },
-   
     username: {
       type: String,
       required: true,
@@ -23,13 +18,13 @@ const thoughtSchema = new Schema(
       type: Date,
       default: moment().format('L'),
     },
-
-    // reactions: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Reaction',
-    //   },
-    // ],
+    reactions: [
+      {
+        text: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Reaction',
+      },
+    ],
   },
   {
     toJSON: {
