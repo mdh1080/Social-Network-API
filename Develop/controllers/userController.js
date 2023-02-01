@@ -1,6 +1,6 @@
 // ObjectId() method for converting userId string into an ObjectId for querying database
 const { ObjectId } = require('mongoose').Types;
-const { User, Thought } = require('../models');
+const { User, Thought, Reaction } = require('../models');
 
 // TODO: Create an aggregate function to get the number of users overall
 const userController = {
@@ -60,40 +60,7 @@ const userController = {
       });
   },
 
-  // Add an reaction to a user
-  addReaction(req, res) {
-    console.log('You are adding an reaction');
-    console.log(req.body);
-    User.findOneAndUpdate(
-      { _id: req.params.userId },
-      { $addToSet: { reactions: req.body } },
-      { runValidators: true, new: true }
-    )
-      .then((user) =>
-        !user
-          ? res
-              .status(404)
-              .json({ message: 'No user found with that ID :(' })
-          : res.json(user)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
-  // Remove reaction from a user
-  removeReaction(req, res) {
-    User.findOneAndUpdate(
-      { _id: req.params.userId },
-      { $pull: { reaction: { reactionId: req.params.reactionId } } },
-      { runValidators: true, new: true }
-    )
-      .then((user) =>
-        !user
-          ? res
-              .status(404)
-              .json({ message: 'No user found with that ID :(' })
-          : res.json(user)
-      )
-      .catch((err) => res.status(500).json(err));
-  },
+ 
 updateUser(req, res) {
   User.findOneAndUpdate(
     { _id: req.params.userId },

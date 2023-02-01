@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongoose').Types;
-const { Thought, User } = require('../models');
+const { Thought, User, Reaction } = require('../models');
 
-module.exports = {
+const thoughtController = {
   // Get all thoughts
   getThoughts(req, res) {
     Thought.find()
@@ -53,4 +53,34 @@ module.exports = {
       )
       .catch((err) => res.status(500).json(err));
   },
+
+  createReaction(req, res) {
+    Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $addToSet: {reactions: req.body} },
+        { runValidators: true, new: true }
+    )
+        .then((thought) => {
+            !thought
+                ? res.status(404).json({ message: 'No thought found with this id!' })
+                : res.json(thought);
+})
+        .catch((err) => res.status(500).json(err));
+},
+
+deleteReaction(req, res) {
+  Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $addToSet: {reactions: req.body} },
+      { runValidators: true, new: true }
+  )
+      .then((thought) => {
+          !thought
+              ? res.status(404).json({ message: 'No thought found with this id!' })
+              : res.json(thought);
+})
+      .catch((err) => res.status(500).json(err));
+},
 };
+
+module.exports = thoughtController;
